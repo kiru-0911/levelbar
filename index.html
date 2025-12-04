@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Break the Bar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      color: #f5f5f5;
+      background: linear-gradient(-45deg, #050509, #140015, #210022, #050509);
+      background-size: 400% 400%;
+      animation: bgMove 12s ease infinite;
+    }
+
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .screen {
+      width: 100%;
+      max-width: 520px;
+      margin: auto;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100vh;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
+      margin: 2px auto 6px;
+    }
+
+    .header {
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    .title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 0 12px rgba(255,0,76,0.7);
+    }
+
+    .subtitle {
+      font-size: 0.92rem;
+      opacity: 0.85;
+      margin-top: 8px;
+      min-height: 1.4em;
+    }
+
+    .bar-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bar-wrapper {
+      height: 60vh;
+      max-height: 460px;
+      width: 50px;
+      border-radius: 999px;
+      border: 2px solid rgba(255, 255, 255, 0.22);
+      background: radial-gradient(circle at 20% 0%, #1b1b25, #050509);
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      box-shadow:
+        0 0 18px rgba(255, 0, 76, 0.65),
+        0 0 40px rgba(255, 0, 76, 0.25);
+      position: relative;
+      transition: transform 0.08s ease;
+    }
+
+    .bar-wrapper::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: inherit;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      pointer-events: none;
+    }
+
+    .bar-fill {
+      width: 100%;
+      height: 0%;
+      background: linear-gradient(180deg, #ff677d, #ff0033);
+      transition: height 0.08s ease-out;
+      box-shadow: 0 0 25px rgba(255, 0, 76, 0.9);
+    }
+
+    .bar-fill.completed {
+      transition: height 0.35s ease-out;
+      box-shadow: 0 0 40px rgba(0, 255, 135, 0.9);
+      background: linear-gradient(180deg, #39ffb6, #00ff88);
+    }
+
+    .bar-pulse {
+      animation: barPulse 0.18s ease-out;
+    }
+
+    @keyframes barPulse {
+      0% { transform: translateY(0); }
+      40% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+
+    .tap-btn {
+      width: 100%;
+      max-width: 400px;
+      margin: 12px auto 10px;
+      padding: 16px;
+      border-radius: 999px;
+      border: none;
+      outline: none;
+      background: radial-gradient(circle at 30% 0%, #ff5f5f, #d50000);
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      box-shadow:
+        0 14px 26px rgba(0, 0, 0, 0.9),
+        0 0 30px rgba(255, 0, 76, 0.95);
+      transition: transform 0.06s ease, box-shadow 0.12s ease, opacity 0.2s ease;
+    }
+
+    .tap-btn:active {
+      transform: translateY(2px) scale(0.98);
+      box-shadow:
+        0 7px 18px rgba(0, 0, 0, 1),
+        0 0 16px rgba(255, 0, 76, 1);
+      opacity: 0.95;
+    }
+
+    .tap-btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .footer-text {
+      text-align: center;
+      font-size: 0.78rem;
+      opacity: 0.6;
+      margin-bottom: 4px;
+    }
+
+    .hint-rotate {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      opacity: 0.5;
+      font-size: 0.75rem;
+      margin-top: 4px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .phone-icon {
+      display: inline-block;
+      transform: rotate(90deg);
+      font-size: 0.9rem;
+    }
+
+    /* Final screen */
+    .final-title {
+      font-size: 1.7rem;
+      text-align: center;
+      font-weight: 900;
+      margin-top: 70px;
+      text-shadow: 0 0 18px rgba(0, 255, 135, 0.8);
+    }
+
+    .final-message {
+      font-size: 1rem;
+      text-align: center;
+      opacity: 0.9;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+
+    .final-message strong {
+      font-weight: 800;
+    }
+
+    .emoji {
+      font-size: 3.2rem;
+      text-align: center;
+      margin-top: 26px;
+    }
+
+    .again-btn {
+      width: 100%;
+      max-width: 270px;
+      margin: 38px auto 0;
+      padding: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0,0,0,0.3);
+      color: #f5f5f5;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: background 0.15s ease, transform 0.08s ease, box-shadow 0.12s ease;
+      backdrop-filter: blur(12px);
+    }
+
+    .again-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.9);
+    }
+
+    @media (min-width: 768px) {
+      .title {
+        font-size: 1.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- GAME SCREEN -->
+  <div class="screen" id="game-screen">
+    <div class="header">
+      <div class="badge">Level 1</div>
+      <div class="title">Break the bar & get a surprise</div>
+      <div class="subtitle" id="subtitle"> </div>
+    </div>
+
+    <div class="bar-area">
+      <div class="bar-wrapper" id="bar-wrapper">
+        <div class="bar-fill" id="bar-fill"></div>
+      </div>
+    </div>
+
+    <div>
+      <p class="footer-text">Slow down for a second and it falls… just like your hopes. 😈</p>
+      <div class="hint-rotate">
+        <span class="phone-icon"> </span>
+        <span> </span>
+      </div>
+      <button class="tap-btn" id="tap-btn">TAP TAP </button>
+    </div>
+  </div>
+
+  <!-- FINAL SCREEN -->
+  <div class="screen hidden" id="final-screen">
+    <div class="final-title">Smile, ’cause you used your brain 😏</div>
+    <div class="final-message">
+      You tapped <strong><span id="tap-count">0</span> times</strong><br />
+      before realizing the answer wasn’t in your thumb.<br /><br />
+      <strong>That’s what thinking out of the box looks like. 🧠</strong>
+    </div>
+    <div class="emoji">🎉</div>
+    <button class="again-btn" id="again-btn">Play again & troll friends</button>
+  </div>
+
+  <script>
+    const barFill = document.getElementById("bar-fill");
+    const barWrapper = document.getElementById("bar-wrapper");
+    const subtitle = document.getElementById("subtitle");
+    const tapBtn = document.getElementById("tap-btn");
+    const gameScreen = document.getElementById("game-screen");
+    const finalScreen = document.getElementById("final-screen");
+    const againBtn = document.getElementById("again-btn");
+    const tapCountSpan = document.getElementById("tap-count");
+
+    let fill = 0;          // 0–100 visual %
+    let hasWon = false;
+    let tapCount = 0;
+
+    // for sensor-based detection
+    let physicallyUpsideDown = false;
+
+    const MAX_TAP_FILL = 97;
+
+    const messages = [
+      " ",
+      " "
+    ];
+
+    function updateBar() {
+      barFill.style.height = fill + "%";
+    }
+
+    function updateSubtitle() {
+      if (hasWon) return;
+
+      let msgIndex = 0;
+      if (fill < 20) msgIndex = 0;
+      else if (fill < 40) msgIndex = 1;
+      else if (fill < 60) msgIndex = 2;
+      else if (fill < 80) msgIndex = 3;
+      else if (fill < 90) msgIndex = 4;
+      else msgIndex = 5 + Math.round(Math.random()); // 5 or 6
+
+      subtitle.textContent = messages[msgIndex] || messages[0];
+    }
+
+    // more robust upside-down detection
+    function isUpsideDown() {
+      let type = null;
+      let angle = null;
+
+      if (screen.orientation) {
+        if (typeof screen.orientation.type === "string") {
+          type = screen.orientation.type;
+        }
+        if (typeof screen.orientation.angle === "number") {
+          angle = screen.orientation.angle;
+        }
+      }
+
+      if (type && type.indexOf("portrait-secondary") !== -1) {
+        return true;
+      }
+
+      if (typeof angle === "number") {
+        angle = ((angle % 360) + 360) % 360;
+        if (angle === 180) return true;
+      }
+
+      if (typeof window.orientation === "number") {
+        let o = ((window.orientation % 360) + 360) % 360;
+        if (o === 180) return true;
+      }
+
+      if (physicallyUpsideDown) return true;
+
+      return false;
+    }
+
+    function handleTap() {
+      if (hasWon) return;
+
+      tapCount++;
+
+      // Ask permission for motion on iOS when needed
+      if (typeof DeviceOrientationEvent !== "undefined" &&
+          typeof DeviceOrientationEvent.requestPermission === "function") {
+        DeviceOrientationEvent.requestPermission().catch(()=>{}); // ignore errors
+      }
+
+      // Vibration
+      if (navigator.vibrate) {
+        navigator.vibrate(20);
+      }
+
+      // Strong push when low, smaller when high
+      let inc;
+      if (fill < 30) {
+        inc = 14 + Math.random() * 4;
+      } else if (fill < 60) {
+        inc = 10 + Math.random() * 4;
+      } else if (fill < 80) {
+        inc = 6 + Math.random() * 4;
+      } else if (fill < 92) {
+        inc = 3 + Math.random() * 2;
+      } else {
+        inc = 1 + Math.random();
+      }
+
+      fill = Math.min(MAX_TAP_FILL, fill + inc);
+      updateBar();
+      updateSubtitle();
+
+      // Pulse animation
+      barWrapper.classList.remove("bar-pulse");
+      void barWrapper.offsetWidth;
+      barWrapper.classList.add("bar-pulse");
+
+      // In case they flip while tapping
+      if (isUpsideDown()) {
+        winGame();
+      }
+    }
+
+    function winGame() {
+      if (hasWon) return;
+      hasWon = true;
+
+      tapCountSpan.textContent = tapCount;
+      subtitle.textContent = "There you go, genius. 🔓";
+
+      tapBtn.disabled = true;
+      barFill.classList.add("completed");
+      barFill.style.height = "100%";
+
+      setTimeout(() => {
+        gameScreen.classList.add("hidden");
+        finalScreen.classList.remove("hidden");
+      }, 700);
+    }
+
+    function checkOrientationAndWin() {
+      if (isUpsideDown() && !hasWon) {
+        winGame();
+      }
+    }
+
+    // continuous “music-like” decay
+    let lastTime = null;
+    function loop(timestamp) {
+      if (lastTime === null) lastTime = timestamp;
+      const dt = (timestamp - lastTime) / 1000;
+      lastTime = timestamp;
+
+      if (!hasWon) {
+        let decay = 0;
+        if (fill > 80) {
+          decay = 28;
+        } else if (fill > 60) {
+          decay = 20;
+        } else if (fill > 30) {
+          decay = 13;
+        } else if (fill > 10) {
+          decay = 8;
+        } else {
+          decay = 4;
+        }
+
+        const t = performance.now() / 200;
+        const wiggle = Math.sin(t) * 0.6;
+
+        fill = Math.max(0, fill - decay * dt + wiggle);
+        if (fill > MAX_TAP_FILL) fill = MAX_TAP_FILL;
+
+        updateBar();
+
+        // also check here for upside-down using sensors
+        if (isUpsideDown()) {
+          winGame();
+        }
+      }
+
+      requestAnimationFrame(loop);
+    }
+
+    tapBtn.addEventListener("click", handleTap);
+
+    window.addEventListener("resize", checkOrientationAndWin);
+    window.addEventListener("orientationchange", checkOrientationAndWin);
+    window.addEventListener("load", () => {
+      checkOrientationAndWin();
+      requestAnimationFrame(loop);
+    });
+
+    againBtn.addEventListener("click", () => {
+      fill = 0;
+      hasWon = false;
+      tapCount = 0;
+      updateBar();
+      barFill.classList.remove("completed");
+      tapBtn.disabled = false;
+      subtitle.textContent = "Tap like the bass just dropped. 🔊";
+
+      finalScreen.classList.add("hidden");
+      gameScreen.classList.remove("hidden");
+    });
+
+    // sensor-based upside-down detection (beta angle)
+    if (typeof DeviceOrientationEvent !== "undefined") {
+      window.addEventListener("deviceorientation", (event) => {
+        const beta = event.beta; // front-back tilt
+        if (beta === null) return;
+
+        // Rough rule: face-up normal portrait ~ +90, upside-down ~ -90
+        if (beta < -120 || beta > 120) {
+          physicallyUpsideDown = true;
+        } else {
+          physicallyUpsideDown = false;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
